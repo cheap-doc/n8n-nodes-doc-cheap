@@ -5,8 +5,12 @@
 # repository, built the release from a given commit. `npm run release` inside
 # GitHub Actions runs lint and build, then `npm publish` with provenance on.
 #
-# npm authentication: either an npm Trusted Publisher for this repository and
-# this workflow file (no secret needed), or an NPM_TOKEN repository secret.
+# npm authentication is trusted publishing: the package's npm settings trust
+# this repository and this workflow file, and npm exchanges the job's OIDC
+# token (`id-token: write`) for a short-lived publish credential. No npm token
+# is stored anywhere. That exchange needs npm 11.5.1 or newer, which is why npm
+# is upgraded before the release step instead of relying on the version the
+# runner's Node happens to bundle.
 #
 # The tag is the bare version from package.json, for example 0.1.0.
 
@@ -34,6 +38,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Check the tag matches the package version
         run: |
@@ -43,14 +48,13 @@ jobs:
             exit 1
           fi
 
+      - name: Upgrade npm to a version that supports trusted publishing
+        run: |
+          npm install -g npm@^11.5.1
+          npm --version
+
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
       - name: Release
-        run: |
-          if [ -n "$NPM_TOKEN" ]; then
-            npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
-          fi
-          npm run release
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm run release
