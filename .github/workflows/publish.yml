@@ -1,0 +1,56 @@
+# Publishes the package to npm when a version tag is pushed.
+#
+# n8n's catalogue accepts a community node only when its npm release carries a
+# provenance statement: a signed record that this workflow, in this public
+# repository, built the release from a given commit. `npm run release` inside
+# GitHub Actions runs lint and build, then `npm publish` with provenance on.
+#
+# npm authentication: either an npm Trusted Publisher for this repository and
+# this workflow file (no secret needed), or an NPM_TOKEN repository secret.
+#
+# The tag is the bare version from package.json, for example 0.1.0.
+
+name: Publish
+
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+
+    permissions:
+      # Mints the token npm signs the provenance statement with.
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+
+      - name: Check the tag matches the package version
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "$GITHUB_REF_NAME" != "$version" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match package.json version $version"
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Release
+        run: |
+          if [ -n "$NPM_TOKEN" ]; then
+            npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+          fi
+          npm run release
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

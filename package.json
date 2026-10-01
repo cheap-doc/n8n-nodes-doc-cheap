@@ -1,0 +1,64 @@
+{
+  "name": "@doc-cheap/n8n-nodes-doc-cheap",
+  "version": "0.1.0",
+  "description": "n8n node for doc.cheap – read passports, ID cards and driving licences into structured fields. Free: 100 documents every month, then $0.01 each",
+  "license": "MIT",
+  "homepage": "https://doc.cheap/docs",
+  "keywords": [
+    "n8n-community-node-package",
+    "n8n",
+    "ocr",
+    "passport",
+    "id-document",
+    "mrz",
+    "kyc",
+    "document-recognition"
+  ],
+  "author": {
+    "name": "Teoh Chin Heng",
+    "email": "admin@doc.cheap"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cheap-doc/n8n-nodes-doc-cheap.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cheap-doc/n8n-nodes-doc-cheap/issues"
+  },
+  "scripts": {
+    "build": "n8n-node build",
+    "build:watch": "tsc --watch",
+    "dev": "n8n-node dev",
+    "lint": "n8n-node lint",
+    "lint:fix": "n8n-node lint --fix",
+    "release": "n8n-node release",
+    "prepublishOnly": "n8n-node prerelease",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "strict": true,
+    "credentials": [
+      "dist/credentials/DocCheapApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/DocCheap/DocCheap.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@n8n/node-cli": "0.50.4",
+    "eslint": "9.32.0",
+    "n8n-workflow": "2.16.0",
+    "release-it": "19.0.4",
+    "typescript": "5.9.3"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
