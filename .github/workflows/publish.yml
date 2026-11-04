@@ -37,7 +37,9 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          # Pinned, not lts/*: n8n's dev tooling pulls in isolated-vm, whose
+          # native build fails on Node 26, so a moving LTS breaks the install.
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
 
       - name: Check the tag matches the package version
