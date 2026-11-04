@@ -35,7 +35,9 @@ Create a **doc.cheap API** credential.
   [doc.cheap cabinet](https://doc.cheap/docs/concepts/api-keys-and-sessions),
   or the public sandbox key `sk_sandbox_public` to try the node without an
   account. The sandbox key gives 10 free recognised documents per address in
-  all, and at most 10 requests per address an hour, whatever their answer.
+  all, and at most 10 requests per address an hour, whatever their answer. Use
+  test images only, never a real document: it keeps a record of every scan for
+  one year.
 - **Base URL** – leave it at `https://api.doc.cheap`.
 
 n8n tests the credential by reading the balance, which spends nothing.
@@ -69,8 +71,10 @@ authenticity checks.
 
 **Stored results.** A result is stored only when the scan was made with a live
 key under a non-zero retention window, and only until that window ends. Under a
-sandbox key nothing is stored, so Get Many returns nothing and Get or Delete
-find nothing. None of Get, Get Many, Delete or Get Balance charges a credit.
+sandbox key nothing can be read back: an account's own sandbox key stores nothing, and the public key
+`sk_sandbox_public` keeps every scan for one year, with a reduced thumbnail and the
+address it came from, where that key cannot reach it. So Get Many returns nothing and
+Get or Delete find nothing. None of Get, Get Many, Delete or Get Balance charges a credit.
 
 The node can also be used as a tool by an n8n agent node.
 
